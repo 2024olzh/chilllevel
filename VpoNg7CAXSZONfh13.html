@@ -1,0 +1,388 @@
+<html><head><base href="https://secret-door-challenge.com/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>비밀의 문을 열어라! - 설명 및 입장</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Noto Sans KR', sans-serif;
+    background: linear-gradient(135deg, #1a1c20 0%, #2c3e50 100%);
+    color: #fff;
+  }
+  .container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  h1 {
+    font-size: 2em;
+    margin-bottom: 15px;
+    color: #d4af37;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  }
+  p {
+    font-size: 1em;
+    max-width: 600px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  ul {
+    text-align: left;
+    max-width: 600px;
+    margin: 0 auto 20px;
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 8px;
+    font-size: 0.9em;
+  }
+  .enter-btn {
+    background: linear-gradient(45deg, #d4af37, #ffd700);
+    border: none;
+    color: #1a1c20;
+    padding: 12px 25px;
+    font-size: 1em;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: bold;
+  }
+  .enter-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  }
+  #challenge-container {
+    display: none;
+    width: 100%;
+    height: 100%;
+  }
+  .door {
+    width: 90%;
+    height: 80%;
+    max-width: 400px;
+    max-height: 700px;
+    background: linear-gradient(45deg, #4a3211, #2b1d0e);
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+    border-radius: 10px;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.7);
+    border: 10px solid #d4af37;
+  }
+  .door::before {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    right: 5%;
+    bottom: 5%;
+    background: linear-gradient(45deg, #3a2509, #2b1d0e);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+  }
+  .door-handle {
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    width: 20px;
+    height: 80px;
+    background: linear-gradient(to right, #d4af37, #ffd700, #d4af37);
+    border-radius: 10px;
+    transform: translateY(-50%);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+  .door-handle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -15px;
+    width: 30px;
+    height: 15px;
+    background: #d4af37;
+    border-radius: 5px;
+    transform: translateY(-50%);
+  }
+  .keypad {
+    position: absolute;
+    right: 20%;
+    top: 50%;
+    transform: translateY(-50%) scale(0.7);
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 15px;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    border: 2px solid #d4af37;
+  }
+  .key {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    background: linear-gradient(145deg, #1a1a1a, #000000);
+    border: none;
+    color: #d4af37;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans KR', sans-serif;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  .key:hover, .key:active {
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    transform: translateY(-2px);
+    box-shadow: 0 7px 15px rgba(0, 0, 0, 0.4);
+  }
+  #display {
+    grid-column: span 3;
+    background-color: rgba(212, 175, 55, 0.1);
+    color: #ffd700;
+    text-align: center;
+    padding: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    margin-bottom: 4px;
+    border-radius: 5px;
+    box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+  #message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 16px;
+    max-width: 80%;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 0 100px rgba(255, 215, 0, 0.8);
+    border: 3px solid #d4af37;
+    color: #1a1c20;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+  }
+  .magical-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+    display: none;
+  }
+  .credit {
+    margin-top: 10px;
+    font-size: 0.8em;
+    color: #d4af37;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  }
+  .credit a {
+    color: #ffd700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .credit a:hover {
+    color: #fff;
+    text-shadow: 0 0 5px #ffd700;
+  }
+  h2 {
+    font-size: 1.2em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="container" id="intro-container">
+  <h1>비밀의 문을 열어라!</h1>
+  <p>환영합니다! 당신이 바로 비밀 임무를 수행할 가정요원이군요! 이제 입장하기 버튼을 누르면, 수수께끼의 비밀 문이 당신 앞에 나타납니다. 당신의 임무는 정확한 코드를 입력해 이 문을 여는 것입니다. 아래 미션을 숙지하고 도전하세요!</p>
+  <h2>미션</h2>
+  <ul>
+    <li>가정 학습지를 풀어 암호를 해독하세요.</li>
+    <li>도어락에 해독된 암호를 입력하세요.</li>
+    <li>문이 열리면, 당신을 위한 비밀 메시지가 나타납니다!</li>
+    <li>메시지를 캡처해 가정쌤께 보고하세요.</li>
+  </ul>
+  <p><strong>⭐ 특급 정보:</strong> 모두에게 다른 메시지가 나타나요. 당신의 임무 성공을 기대할게요, 가정요원!</p>
+  <button class="enter-btn" onclick="startChallenge()">입장하기</button>
+  <p class="credit">
+    재연쌤이 만들었음 >ᴗ•<br>
+    출처: <a href="https://blog.naver.com/gajae_ssam" target="_blank">blog.naver.com/gajae_ssam</a><br>
+    (학습지는 블로그에 있습니당)
+  </p>
+</div>
+
+<div id="challenge-container">
+  <div class="door">
+    <div class="door-handle"></div>
+    <div class="keypad">
+      <div id="display"></div>
+      <button class="key">1</button>
+      <button class="key">2</button>
+      <button class="key">3</button>
+      <button class="key">4</button>
+      <button class="key">5</button>
+      <button class="key">6</button>
+      <button class="key">7</button>
+      <button class="key">8</button>
+      <button class="key">9</button>
+      <button class="key">C</button>
+      <button class="key">0</button>
+      <button class="key">E</button>
+    </div>
+  </div>
+</div>
+
+<div id="message"></div>
+<div class="magical-effect"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const introContainer = document.getElementById('intro-container');
+const challengeContainer = document.getElementById('challenge-container');
+const display = document.getElementById('display');
+const door = document.querySelector('.door');
+const message = document.getElementById('message');
+const keys = document.querySelectorAll('.key');
+const magicalEffect = document.querySelector('.magical-effect');
+let code = '';
+
+const messages = [
+  { text: "참 잘했어요! 지식의 문이 열렸어요!", probability: 10 },
+  { text: "그저 빛... 여러분, 여기 천재 있습니다!", probability: 10 },
+  { text: "축하합니다! 오늘의 미션을 성공적으로 완료했어요!", probability: 10 },
+  { text: "훌륭해요! 당신은 1인1회 분량 마스터입니다!", probability: 10 },
+  { text: "멋져요! 자유 시간 쿠폰을 받았습니다! 혼자 쓸 경우에는 10분, 다같이 쓸 경우에는 5분 입니다!", probability: 5 },
+  { text: "당신은 똑똑한 가정 문제 해결사군요!", probability: 5 },
+  { text: "정답입니다! 오늘의 미션을 모두 완료했어요!", probability: 10 },
+  { text: "Are you 천재?", probability: 20 },
+  { text: "수수수수퍼가정짱^.^", probability: 20 }
+];
+
+function startChallenge() {
+  introContainer.style.display = 'none';
+  challengeContainer.style.display = 'flex';
+  challengeContainer.style.justifyContent = 'center';
+  challengeContainer.style.alignItems = 'center';
+}
+
+keys.forEach(key => {
+  key.addEventListener('click', () => {
+    if (key.textContent === 'C') {
+      code = '';
+    } else if (key.textContent === 'E') {
+      if (code === '200') {
+        openDoor();
+      } else {
+        display.textContent = 'ERROR';
+        setTimeout(() => {
+          display.textContent = '';
+          code = '';
+        }, 1000);
+      }
+    } else {
+      if (code.length < 3) {
+        code += key.textContent;
+      }
+    }
+    display.textContent = code;
+  });
+});
+
+function openDoor() {
+  door.style.transform = 'rotateY(-110deg)';
+  const randomMessage = getRandomMessage();
+  message.textContent = randomMessage;
+  message.style.display = 'block';
+  createMagicalEffect();
+  setTimeout(() => {
+    door.style.transform = 'none';
+    message.style.display = 'none';
+    magicalEffect.style.display = 'none';
+    code = '';
+    display.textContent = '';
+  }, 7000);
+}
+
+function getRandomMessage() {
+  const totalProbability = messages.reduce((sum, msg) => sum + msg.probability, 0);
+  const randomNum = Math.random() * totalProbability;
+  let cumulativeProbability = 0;
+
+  for (const msg of messages) {
+    cumulativeProbability += msg.probability;
+    if (randomNum <= cumulativeProbability) {
+      return msg.text;
+    }
+  }
+
+  return messages[messages.length - 1].text;
+}
+
+function createMagicalEffect() {
+  magicalEffect.style.display = 'block';
+  
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ alpha: true });
+  
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  magicalEffect.appendChild(renderer.domElement);
+
+  const particles = new THREE.Group();
+  scene.add(particles);
+  
+  for (let i = 0; i < 500; i++) {
+    const geometry = new THREE.SphereGeometry(0.05, 32, 32);
+    const material = new THREE.MeshBasicMaterial({ color: Math.random() < 0.5 ? 0xffd700 : 0xd4af37 });
+    const particle = new THREE.Mesh(geometry, material);
+    
+    particle.position.set(
+      Math.random() * 20 - 10,
+      Math.random() * 20 - 10,
+      Math.random() * 20 - 10
+    );
+    particles.add(particle);
+  }
+
+  camera.position.z = 15;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    particles.rotation.x += 0.001;
+    particles.rotation.y += 0.002;
+    renderer.render(scene, camera);
+  }
+
+  animate();
+}
+
+// 화면 크기 변경 시 Three.js 장면 조정
+window.addEventListener('resize', () => {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  renderer.setSize(width, height);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+});
+</script>
+</body></html>
